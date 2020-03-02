@@ -10,14 +10,20 @@ class Evaluator:
                            'count': 0}
 
 
-    def load_glove_embeddings(self, file = "../data/glove.6B.50d.txt"):
+    def load_glove_embeddings(self, file = "../data/glove.6B.50d.txt", max_line = 10000):
+        #currently we are only loading 10000 words because cosine similarity is too slow
+
         embeddings_dict = {}
+        line_count = 0
         with open(file, 'r') as f:
             for line in f:
+                if line_count >= max_line:
+                    break
                 values = line.split()
                 word = values[0]
                 vector = np.asarray(values[1:], "float32")
                 embeddings_dict[word] = vector
+                line_count += 1
         return embeddings_dict
 
 
@@ -34,22 +40,20 @@ class Evaluator:
     def top_ten_hundred(self, embeddings_dict, answer, guess):
         """
         Adds evaluation for a single word onto th_tracker.
-        guess is a word.
+        guess is an embedding.
         """
         self.th_tracker['count'] += 1
-        top_ten = self.find_closest_embeddings(embeddings_dict, embeddings_dict[answer], k = 10)
-        if guess in top_ten:
+        top_hundred = self.find_closest_embeddings(embeddings_dict, guess, k = 100)
+        top_ten = top_hundred[:10]
+        if answer in top_ten:
             self.th_tracker['10'] += 1
             self.th_tracker['100'] += 1
-        else:
-            top_hundred = self.find_closest_embeddings(embeddings_dict, embeddings_dict[answer], k = 100)
-            if guess in top_hundred:
-                self.th_tracker['100'] += 1
+        elif answer in top_hundred:
+            self.th_tracker['100'] += 1
+        print(answer, top_ten)
 
     def compute_th_accuracy(self):
-        accuracy = self.th_tracker['10'] / self.th_tracker['100']
-
-        return accuracy
+        return self.th_tracker['10'], self.th_tracker['100'], self.th_tracker['count']
 
 
 # e = Evaluator()

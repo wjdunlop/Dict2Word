@@ -1,0 +1,16 @@
+{
+  "Will": 5,
+  "<s>": 1,
+  "<unk>": 3,
+  "<pad>": 0,
+  "Word2Vec": 10,
+  "Glove": 11,
+  "Pretrained": 4,
+  "Cynthia": 12,
+  "</s>": 2,
+  "model": 7,
+  "metric": 8,
+  "BERT": 6,
+  "Evaluation": 9,
+  "Baseline": 13
+}

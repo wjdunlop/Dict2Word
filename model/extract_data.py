@@ -4,12 +4,13 @@ extracts word definitions from data files.
 from tqdm import tqdm
 import time
 
-# words = []
-# definitions = []
 
 def extract_definitions(filename):
     # Using readlines() 
-    data_raw = open(filename, 'r') 
+    words = []
+    definitions = []
+
+    data_raw = open(filename, 'r')
     for line in tqdm(data_raw): 
         line_items = line.split('\t')
 
