@@ -43,7 +43,7 @@ def pad_sents(sents, pad_token):
     return sents_padded
 
 
-def read_corpus(file_path, source):
+def read_corpus(file_path):
     """ Read file, where each sentence is dilineated by a `\n`.
     @param file_path (str): path to file containing corpus
     @param source (str): "tgt" or "src" indicating whether text
@@ -61,10 +61,7 @@ def read_corpus(file_path, source):
 
 
 def batch_iter(data, batch_size, shuffle=False):
-    """ Yield batches of source and target sentences reverse sorted by length (largest to smallest).
-    @param data (list of (src_sent, tgt_sent)): list of tuples containing source and target sentence
-    @param batch_size (int): batch size
-    @param shuffle (boolean): whether to randomly shuffle the dataset
+    """  TODO: remove tgt_sents, adopt to new data scheme
     """
     batch_num = math.ceil(len(data) / batch_size)
     index_array = list(range(len(data)))
@@ -81,20 +78,3 @@ def batch_iter(data, batch_size, shuffle=False):
         tgt_sents = [e[1] for e in examples]
 
         yield src_sents, tgt_sents
-
-def load_glove_embeddings(file = "../data/glove.6B.50d.txt"):
-    embeddings_dict = {}
-    with open(file, 'r') as f:
-        for line in f:
-            values = line.split()
-            word = values[0]
-            vector = np.asarray(values[1:], "float32")
-            embeddings_dict[word] = vector
-    return embeddings_dict
-
-def find_closest_embeddings(embeddings_dict, embedding, k = 10):
-    return sorted(embeddings_dict.keys(),
-                  key=lambda word: spatial.distance.cosine(embeddings_dict[word], embedding)[:k])
-
-embeddings_dict = load_glove_embeddings()
-print(find_closest_embeddings(embeddings_dict, embeddings_dict["will"]))
