@@ -4,8 +4,8 @@ extracts word definitions from data files.
 from tqdm import tqdm
 import time
 
-words = []
-definitions = []
+# words = []
+# definitions = []
 
 def extract_definitions(filename):
     # Using readlines() 
@@ -19,12 +19,24 @@ def extract_definitions(filename):
     # Closing files 
     data_raw.close()
 
-extract_definitions('../data/data_train_raw.txt')
+# extract_definitions('../data/data_train_raw.txt')
 
-with open('../data/data_train_definitions.txt', 'w') as filehandle_d:
-    for definition in definitions:
-        filehandle_d.write('%s' % definition)
+# with open('../data/data_train_definitions.txt', 'w') as filehandle_d:
+#     for definition in definitions:
+#         filehandle_d.write('%s' % definition)
 
-with open('../data/data_train_words.txt', 'w') as filehandle_w:
-    for word in words:
-        filehandle_w.write('%s\n' % word)
+# with open('../data/data_train_words.txt', 'w') as filehandle_w:
+#     for word in words:
+#         filehandle_w.write('%s\n' % word)
+
+def convert_file_to_list(filename):
+    file = open(filename, 'r')
+    ls = []
+
+    for line in tqdm(file): 
+        ls.append(line.strip())
+
+    # Closing files 
+    file.close()
+
+    return ls
