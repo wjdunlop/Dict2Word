@@ -20,6 +20,8 @@ def create_definition_embedding(embeddings_dict, definitions_filename):
 
     def_embeddings = []
 
+    punctuation = ["\"","'",",",".",":",";"]
+
     for definition in definitions:
         definition = definition
         words = definition.split(' ')
