@@ -2,11 +2,20 @@ from extract_data import convert_file_to_list
 from evaluator import Evaluator
 import collections
 import numpy as np
+import nltk
+from nltk.corpus import stopwords
 
 def create_definition_embedding(embeddings_dict, definitions_filename):
     """
     Creates and returns a list of definition embeddings by adding together the word vectors
     """
+    nltk.download(stopwords)
+    stop_words = stopwords.words('english')
+
+    negations = ["no", "not"]
+    for word in negations:
+        stop_words.remove(word)
+
     definitions = convert_file_to_list(definitions_filename)
 
     def_embeddings = []
@@ -17,9 +26,9 @@ def create_definition_embedding(embeddings_dict, definitions_filename):
         def_embedding = np.zeros_like(embeddings_dict['a'])
 
         for word in words:
-            #TODO: we need to remove stop words
-            if word in embeddings_dict:
+            if word not in stop_words and word in embeddings_dict:
                 def_embedding += embeddings_dict[word]
+
 
         def_embeddings.append(def_embedding)
 
