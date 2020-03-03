@@ -9,7 +9,7 @@ def create_definition_embedding(embeddings_dict, definitions_filename):
     """
     Creates and returns a list of definition embeddings by adding together the word vectors
     """
-    nltk.download(stopwords)
+    nltk.download('stopwords')
     stop_words = stopwords.words('english')
 
     negations = ["no", "not"]
