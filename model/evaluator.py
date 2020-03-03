@@ -25,7 +25,7 @@ class Evaluator:
                 embeddings_dict[word] = vector
                 line_count += 1
         return embeddings_dict
-
+    
 
     def find_closest_embeddings(self, embeddings_dict, embedding, k = 10):
         """
