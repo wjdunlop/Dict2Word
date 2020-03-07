@@ -200,7 +200,7 @@ if __name__ == '__main__':
 
     print('read in source sentences: %s' % args['--train-src'])
 
-    src_sents = read_corpus(args['--train-src'], source='src')
+    src_sents = read_corpus(args['--train-src'])
 
     vocab = Vocab.build(src_sents, int(args['--size']), int(args['--freq-cutoff']))
     print('generated vocabulary, source %d words' % (len(vocab.src)))

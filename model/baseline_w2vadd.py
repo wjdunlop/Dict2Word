@@ -47,7 +47,8 @@ with open('../data/data_train_words.txt') as f:
 lines = [line[:-1] for line in lines]
 words = sorted(list(set(lines)))
 for word in words:
-    validate_dict[word] = glove_dict[word]
+    if word in glove_dict:
+        validate_dict[word] = glove_dict[word]
 
 
 def_embeddings = create_definition_embedding(glove_dict, "../data/data_train_definitions.txt")
