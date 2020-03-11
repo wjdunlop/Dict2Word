@@ -1,10 +1,33 @@
 import torch
 import numpy as np
 from transformers import BertModel, BertTokenizer
-
+import progressbar
 # using transformers
 # used this tutorial
 # https://medium.com/swlh/painless-fine-tuning-of-bert-in-pytorch-b91c14912caa
+def getMaxLen(lines):
+	# print('a')
+	# print(lines.readlines()[:3])
+	lines = list(lines)
+	max1 = -1
+	maxInd = -1
+	c = 0
+	for idx in range(len(lines)):
+		line = lines[idx]
+		size = len(line.split(' '))
+		
+		if size > max1:
+			maxInd = idx
+		# print(max1)
+		max1 = max(max1, size)
+
+		c += 1
+		# print(line)
+	# print(max1)
+	# print(maxInd)
+	# print(lines[maxInd])
+	return max1
+
 def defs_to_bert(dataset):
 
 	print('Embedding dataset... pretrained BERT model [bert-base-uncased]')
@@ -16,18 +39,30 @@ def defs_to_bert(dataset):
 	tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 	#Specifying the max length
-	T = getMaxLen(file)
+	
 	print('gathering cls_head from file')
 	
 	print("Progress: ")
-	bar = progressbar.ProgressBar(max_value=len(file))
+	
 	outs = []
-	path = 'data/'+dataset
+	path = 'data/data_train_definitions.txt'
 
+
+	
+	
+	path = 'data/data_train_definitions.txt'
+	file2 = open(path, encoding = 'utf-8')
+	T = getMaxLen(file2)
 	file = open(path, encoding = 'utf-8')
-	file.readlines()
-	for sentence in file:
-
+	# bar = progressbar.ProgressBar(max_value=len(file.readlines()))
+	# print(file.readlines())
+	i = 0
+	for sentence in file.readlines()[:100]:
+		print(i, ' ', len(file.readlines()))
+		
+		sentence = sentence[:-1]
+		# print("poop")
+		# print(sentence)
 		#Step 1: Tokenize
 		tokens = tokenizer.tokenize(sentence)
 
@@ -54,8 +89,11 @@ def defs_to_bert(dataset):
 		                                  token_type_ids = seg_ids)
 		# print(hidden_reps)
 		#Out: torch.Size([1, 12, 768])
-		outs.append(cls_head)
+		# outs.append(cls_head)
+		i += 1
+		# progressbar.update(i)
+	# print(outs)
 	#Out: torch.Size([1, 768])
 
 
-defs_to_bert('data_train_definitions.txt')
+defs_to_bert(None)
