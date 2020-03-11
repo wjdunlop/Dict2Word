@@ -1,5 +1,7 @@
 import numpy as np
 from scipy import spatial
+from tqdm import tqdm
+import io
 
 class Evaluator:
 
@@ -24,6 +26,23 @@ class Evaluator:
                 vector = np.asarray(values[1:], "float32")
                 embeddings_dict[word] = vector
                 line_count += 1
+        return embeddings_dict
+    
+    
+
+    def load_vectors(self, fname ="../data/wiki-news-300d-1M-subword.vec", max_line = 10000):
+        fin = io.open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
+        n, d = map(int, fin.readline().split())
+        embeddings_dict = {}
+        line_count = 0
+        for line in tqdm(fin):
+            if line_count >= max_line:
+                    break
+            tokens = line.rstrip().split(' ')
+            word = tokens[0]
+            vector = np.asarray(tokens[1:], "float32")
+            embeddings_dict[word] = vector
+            line_count += 1
         return embeddings_dict
     
 
