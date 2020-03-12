@@ -78,3 +78,28 @@ def batch_iter(data, batch_size, shuffle=False):
         tgt_sents = [e[1] for e in examples]
 
         yield src_sents, tgt_sents
+
+def batch_iter_bert(sents_ft_ids, sents_bert_ids, masks, words, batch_size, shuffle=False):
+    """  TODO: remove tgt_sents, adopt to new data scheme
+    """
+    assert(len(sents_bert_ids) == len(masks))
+    assert(len(masks) == len(sents_ft_ids))
+    assert(len(masks) == len(words))
+
+    batch_num = math.ceil(len(words) / batch_size)
+    index_array = list(range(len(words)))
+    examples = [(sents_ft_ids[idx], sents_bert_ids[idx], masks[idx], words[idx]) for idx in range(len(words))]
+
+    if shuffle:
+        np.random.shuffle(index_array)
+
+    for i in range(batch_num):
+        indices = index_array[i * batch_size: (i + 1) * batch_size]
+        examples = [data[idx] for idx in indices]
+        examples = sorted(examples, key=lambda e: len(e[0]), reverse=True)
+        batch_ft_ids = [e[0] for e in examples]
+        batch_bert_ids = [e[1] for e in examples]
+        batch_masks = [e[2] for e in examples]
+        batch_words = [e[3] for e in examples]
+
+        yield batch_ft_ids, batch_bert_ids, batch_masks, batch_words
