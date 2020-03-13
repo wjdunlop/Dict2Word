@@ -19,6 +19,8 @@ from vocab import Vocab, VocabEntry
 from utils import read_corpus, pad_sents, batch_iter
 import pickle
 import timeit
+import time
+from datetime import datetime
 
 
 def create_emb_layer(weights_matrix, src_pad_token_idx, device = "cpu", non_trainable=True):
@@ -110,7 +112,6 @@ def main(argv):
 		vocab.add(w)
 	print("vocab length:", len(vocab))
 
-
 	assert(len(words) == len(definitions))
 	training_data = [(definitions[i], words[i]) for i in range(len(words))]
 
@@ -118,10 +119,16 @@ def main(argv):
 	loss_function = nn.CosineEmbeddingLoss(margin=0.0, reduction='mean')
 	optimizer = torch.optim.Adam(model.parameters(), lr = LEARNING_RATE)
 
+	dt = str(datetime.fromtimestamp(time.time()))[:-7]
+	print(dt)
+	dt = dt.replace(' ', '_')
+	dt = dt.replace(':', '-')
 	start = timeit.default_timer()
 	losses = []
 
+	best_loss = float('inf')
 	for epoch in range(EPOCHS):
+		epoch_losses = []
 		count = 0
 		for src_sents, tgt_word in batch_iter(training_data, BATCH_SIZE, False):
 			model.zero_grad()
@@ -140,9 +147,16 @@ def main(argv):
 			loss.backward()
 			optimizer.step()
 			count += 1
-			if count%100 == 0:
+			epoch_losses.append(loss)
+			if count % 200 == 0:
 				print("Time elapsed", timeit.default_timer() - start, "Epoch", epoch, " Count", count, ": Loss", loss)
 				losses.append(loss)
+		eloss = sum(epoch_losses)/len(epoch_losses)
+		if eloss < best_loss:
+			best_loss = eloss
+			title = 'ft_model'+ dt +'.pt'
+			torch.save(model.state_dict(), title)
+			print("model saves as:", title, "with epoch loss of ", eloss)
 		
 	stop = timeit.default_timer()
 
@@ -150,7 +164,6 @@ def main(argv):
 
 	import matplotlib.pyplot as plt
 	print(plt.plot([l.double() for l in losses]))
-
 
 if __name__ == "__main__":
    main(sys.argv[1:])
