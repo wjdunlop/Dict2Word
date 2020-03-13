@@ -141,8 +141,8 @@ def main(argv):
 			
 			y_indices = vocab.words2indices(tgt_word)
 			y_array = model.embedding.source[0](torch.tensor(y_indices, device = device)).double()
-			y_pred = tag_scores[0].squeeze(dim = 1).double()
-			y_match = torch.ones(y_pred.shape[0])
+			y_pred = tag_scores[0].squeeze(dim = 1).double().to(device)
+			y_match = torch.ones(y_pred.shape[0], device = device)
 
 			loss = loss_function(y_pred, y_array, y_match)
 
