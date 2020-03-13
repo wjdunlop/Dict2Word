@@ -116,6 +116,7 @@ def main(argv):
 	training_data = [(definitions[i], words[i]) for i in range(len(words))]
 
 	model = LSTMModel(100, 100, vocab, sub_fasttext_dict, device)
+	model.to(device)
 	loss_function = nn.CosineEmbeddingLoss(margin=0.0, reduction='mean')
 	optimizer = torch.optim.Adam(model.parameters(), lr = LEARNING_RATE)
 
