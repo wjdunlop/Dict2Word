@@ -23,14 +23,6 @@ import time
 from datetime import datetime
 
 
-def create_emb_layer(weights_matrix, src_pad_token_idx, device = "cpu", non_trainable=True):
-		num_embeddings, embedding_dim = weights_matrix.shape
-		emb_layer = nn.Embedding(num_embeddings, embedding_dim, src_pad_token_idx)
-		emb_layer.weight.data.copy_(torch.from_numpy(weights_matrix).float().to(device)) #figure out what is here
-		if non_trainable:
-			emb_layer.weight.requires_grad = False
-		return emb_layer, num_embeddings, embedding_dim
-
 class ModelEmbeddings(nn.Module): 
 	"""
 	Class that converts input words to their embeddings.
@@ -63,7 +55,16 @@ class ModelEmbeddings(nn.Module):
 
 		# default values
 		src_pad_token_idx = vocab['<pad>']
-		self.source = create_emb_layer(weights_matrix, src_pad_token_idx, device, True)
+		self.source = self.create_emb_layer(weights_matrix, src_pad_token_idx, device, True)
+
+	def create_emb_layer(self, weights_matrix, src_pad_token_idx, device = "cpu", non_trainable=True):
+		num_embeddings, embedding_dim = weights_matrix.shape
+		emb_layer = nn.Embedding(num_embeddings, embedding_dim, src_pad_token_idx).to(device)
+		
+		emb_layer.weight.data.copy_(torch.from_numpy(weights_matrix).float().to(device)) #figure out what is here
+		if non_trainable:
+			emb_layer.weight.requires_grad = False
+		return emb_layer, num_embeddings, embedding_dim
 
 class LSTMModel(nn.Module):
 	def __init__(self, input_size, hidden_size, vocab, fasttext_model, device = 'cpu'):
@@ -116,7 +117,6 @@ def main(argv):
 	training_data = [(definitions[i], words[i]) for i in range(len(words))]
 
 	model = LSTMModel(100, 100, vocab, sub_fasttext_dict, device)
-	model.to(device)
 	loss_function = nn.CosineEmbeddingLoss(margin=0.0, reduction='mean')
 	optimizer = torch.optim.Adam(model.parameters(), lr = LEARNING_RATE)
 
@@ -134,7 +134,7 @@ def main(argv):
 		for src_sents, tgt_word in batch_iter(training_data, BATCH_SIZE, False):
 			model.zero_grad()
 			x_lengths = [len(sent) for sent in src_sents]
-			x = vocab.to_input_tensor(src_sents, device).to(device)
+			x = vocab.to_input_tensor(src_sents, device)
 			init_hidden = model.initHidden(len(src_sents), device)
 			tag_scores = model.forward(x, init_hidden, x_lengths)
 			
