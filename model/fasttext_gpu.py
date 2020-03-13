@@ -133,7 +133,7 @@ def main(argv):
 		for src_sents, tgt_word in batch_iter(training_data, BATCH_SIZE, False):
 			model.zero_grad()
 			x_lengths = [len(sent) for sent in src_sents]
-			x = vocab.to_input_tensor(src_sents, device)
+			x = vocab.to_input_tensor(src_sents, device).to(device)
 			init_hidden = model.initHidden(len(src_sents), device)
 			tag_scores = model.forward(x, init_hidden, x_lengths)
 			
