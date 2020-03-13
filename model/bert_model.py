@@ -221,6 +221,7 @@ for epoch in range(1):
         loss_cum.append(loss)
         loss.backward()
         optimizer.step() 
+        break
 
     
     eloss = sum(loss_cum)/len(loss_cum)
