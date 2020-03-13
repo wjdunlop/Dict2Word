@@ -52,6 +52,7 @@ class Evaluator:
         """
         ans = sorted(embeddings_dict.keys(),
                       key=lambda word: spatial.distance.cosine(embeddings_dict[word], embedding))
+        print(ans[:10])
 
         return ans[:k]
 
